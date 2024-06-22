@@ -7,4 +7,9 @@ public class OffsetData {
     this.lineOffset = lineOffset;
     this.charOffset = charOffset;
   }
+
+  @Override
+  public String toString() {
+    return "line=" + lineOffset+ ",charOffset="+ charOffset+'\'';
+  }
 }
