@@ -12,9 +12,11 @@ import java.util.Map;
 
 public class StringFinder {
   public static final String file = "https://norvig.com/big.txt";
+
   public static void main(String[] args) throws IOException {
     long startTime = System.currentTimeMillis();
     System.out.println("Start time "+ startTime);
+    Map<String,List<OffsetData>> matchers=null;
     int lines = 1000;
 
     String each_line;
@@ -32,11 +34,11 @@ public class StringFinder {
         count++;
         if(count%lines==0) {
           String overall_string = str.toString();
-          Map<String,List<OffsetData>> matches = Matchers.match(overall_string, finder);
-          Aggregators.aggregatePrinter(matches);
+          matchers = Matchers.match(overall_string, finder);
 
         }
       }
+      Aggregators.aggregatePrinter(matchers);
     } catch (FileNotFoundException e) {
       throw new RuntimeException(e);
     } catch (IOException e) {

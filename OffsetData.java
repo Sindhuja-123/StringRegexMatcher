@@ -10,6 +10,6 @@ public class OffsetData {
 
   @Override
   public String toString() {
-    return "line=" + lineOffset+ ",charOffset="+ charOffset+'\'';
+    return "line=" + lineOffset+ ",charOffset="+ charOffset+'\''+ '\n';
   }
 }
