@@ -1,14 +1,12 @@
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class StringFinder {
   public static final String file = "https://norvig.com/big.txt";
@@ -16,16 +14,19 @@ public class StringFinder {
   public static void main(String[] args) throws IOException {
     long startTime = System.currentTimeMillis();
     System.out.println("Start time "+ startTime);
-    Map<String,List<OffsetData>> matchers=null;
-    int lines = 1000;
+    List<Future<Map<String,Set<OffsetData>>>> matchers=new ArrayList<>();
+
+    int lines = 10000;
 
     String each_line;
     StringBuilder str = new StringBuilder();
     int count=0;
-    List<String> finder =  new ArrayList<>(Arrays.asList("john"));
+    List<String> finder =  new ArrayList<>(Arrays.asList("laws", "can"));
     URL file_url = new URL(file);
     BufferedReader bf = new BufferedReader(new InputStreamReader(file_url.openStream()));
     String st;
+
+    ExecutorService executorService = Executors.newFixedThreadPool(5);
     try {
       while((st = bf.readLine()) != null) {
         each_line = st;
@@ -34,10 +35,14 @@ public class StringFinder {
         count++;
         if(count%lines==0) {
           String overall_string = str.toString();
-          matchers = Matchers.match(overall_string, finder);
+          str.setLength(0);
+          Future<Map<String, Set<OffsetData>>> match = executorService.submit(new Matchers(overall_string, finder));
+          //matchers = Matchers.match(overall_string, finder);
 
+           matchers.add(match);
         }
       }
+      executorService.shutdown();
       Aggregators.aggregatePrinter(matchers);
     } catch (FileNotFoundException e) {
       throw new RuntimeException(e);
@@ -45,11 +50,13 @@ public class StringFinder {
       throw new RuntimeException(e);
     } finally {
       bf.close();
+
     }
 
     long endTime = System.currentTimeMillis();
     System.out.println("Start time "+ endTime);
     long totalTime = endTime-startTime;
     System.out.println("total time taken  "+ totalTime);
+
   }
 }
