@@ -21,12 +21,12 @@ public class StringFinder {
     String each_line;
     StringBuilder str = new StringBuilder();
     int count=0;
-    List<String> finder =  new ArrayList<>(Arrays.asList("laws", "can"));
+    List<String> finder =  new ArrayList<>(Arrays.asList("can"));
     URL file_url = new URL(file);
     BufferedReader bf = new BufferedReader(new InputStreamReader(file_url.openStream()));
     String st;
-
-    ExecutorService executorService = Executors.newFixedThreadPool(5);
+    System.out.println("Available thread "+ Runtime.getRuntime().availableProcessors());
+    ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     try {
       while((st = bf.readLine()) != null) {
         each_line = st;
@@ -39,7 +39,7 @@ public class StringFinder {
           Future<Map<String, Set<OffsetData>>> match = executorService.submit(new Matchers(overall_string, finder));
           //matchers = Matchers.match(overall_string, finder);
 
-           matchers.add(match);
+            matchers.add(match);
         }
       }
       executorService.shutdown();

@@ -19,18 +19,17 @@ public class Matchers implements Callable<Map<String, Set<OffsetData>>> {
         List<String> sub_array_string = List.of(lined_string[i].split(" "));
 
         for (int j = 0; j < sub_array_string.size(); j++) {
-          if (sub_array_string.get(j).equals(data)) {
-            if (mp.containsKey(data)) {
-              mp.get(data).add(new OffsetData(i + 1, j + 1));
-            } else {
-              Set<OffsetData> offsetData = new HashSet<>();
-              offsetData.add(new OffsetData(i+1, j+1));
-              mp.put(data, offsetData);
-            }
+          if (trimSpecialChar(sub_array_string.get(j)).equalsIgnoreCase(data)) {
+
+            mp.computeIfAbsent(data.toLowerCase(), k -> new HashSet<>()).add(new OffsetData(i + 1, j + 1));
           }
         }
       }
     }
     return mp;
+  }
+
+  private String trimSpecialChar(String str_char) {
+    return str_char.replaceAll("^[^a-zA-Z:!]+|[^a-zA-Z:!]+$", "");
   }
 }
